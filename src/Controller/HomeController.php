@@ -4,18 +4,20 @@ namespace Controller;
 
 
 use Model\PostModel;
+use PDO;
+use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
 class HomeController
 {
-    private $twig;
-    private $postModel;
+    private Environment $twig;
+    private PostModel $postModel;
 
-    public function __construct(\Twig\Environment $twig, PostModel $postModel) {
+    public function __construct(Environment $twig, PDO $db) {
         $this->twig = $twig;
-        $this->postModel = $postModel;
+        $this->postModel = new PostModel($db);
     }
 
     /**
@@ -28,7 +30,7 @@ class HomeController
         $posts = $this->postModel->getAll();
 
         // Utiliser Twig pour afficher la page d'accueil
-        echo $this->twig->render('home/index.twig', [
+        return $this->twig->render('home/index.twig', [
             'page_title' => 'Mon Blog',
             'posts' => $posts,
         ]);
