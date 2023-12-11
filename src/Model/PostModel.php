@@ -6,13 +6,14 @@ use PDO;
 
 class PostModel
 {
-    private $db;
+    private PDO $db;
 
     public function __construct(PDO $db) {
         $this->db = $db;
     }
 
-    public function getAll() {
+    public function getAll(): bool|array
+    {
         // Récupérer tous les articles de blog depuis la base de données
         $query = $this->db->query("SELECT * FROM posts ORDER BY date_creation DESC");
 

@@ -1,0 +1,7 @@
+/vendor/
+/node_modules/
+/composer.lock
+/.idea/
+*.log
+.DS_Store
+config.php
