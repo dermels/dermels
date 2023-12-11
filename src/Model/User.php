@@ -9,7 +9,7 @@ class User
     private string $lastname;
     private string $password;
     private string $email;
-    private string $role;
+    private string $roleLevel;
 
     public function __construct()
     {
@@ -18,7 +18,7 @@ class User
         $this->lastname = '';
         $this->password = '';
         $this->email = '';
-        $this->role = '';
+        $this->roleLevel = 0;
     }
 
     // getters et setters pour chaque propriété
@@ -78,14 +78,14 @@ class User
         return $this;
     }
 
-    public function getRole(): string
+    public function getRoleLevel(): string
     {
-        return $this->role;
+        return $this->roleLevel;
     }
 
-    public function setRole(string $role): self
+    public function setRoleLevel(string $roleLevel): self
     {
-        $this->role = $role;
+        $this->roleLevel = $roleLevel;
         return $this;
     }
 }

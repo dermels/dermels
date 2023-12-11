@@ -1,49 +1,29 @@
 <?php
 
-use Controller\HomeController;
-use Model\PostModel;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 require_once '../vendor/autoload.php';
 require_once '../config.php';
-require_once '../app/Model/PostModel.php';
-require_once '../app/Controller/HomeController.php';
-require_once '../app/Twig/PathExtension.php';
-
+require_once '../src/Controller/AuthController.php';
+require_once '../src/Twig/PathExtension.php';
+require_once '../src/router.php';
 
 // Initialiser PDO pour la base de données
 try {
     $db = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASSWORD);
-    echo 'Connexion réussie';
+//    echo 'Connexion réussie' ;
 } catch (PDOException $e) {
-    echo 'Erreur de connexion : ' . $e->getMessage();
+    echo 'error 500 : ' . $e->getMessage();
+    die;
 }
-
-
+// Démarrer la session
+session_start();
 // Initialiser Twig
-$loader = new \Twig\Loader\FilesystemLoader('../templates');
-$twig = new \Twig\Environment($loader);
-$twig->addExtension(new App\Twig\PathExtension('index.php'));
+$loader = new FilesystemLoader('../templates');
+$twig = new Environment($loader);
+$twig->addExtension(new App\Twig\PathExtension(''));
 
-// Initialiser le modèle
-$postModel = new PostModel($db);
-
-
-
-// Vérifier la requête de l'utilisateur et appeler le contrôleur approprié
-if (isset($_GET['action'])) {
-    $action = $_GET['action'];
-} else {
-    $action = 'home';
-}
-
-switch ($action) {
-    case 'home':
-        $controller = new HomeController($twig, $postModel);
-        $controller->index();
-        break;
-    // Ajoutez d'autres cas pour d'autres pages/contrôleurs
-    default:
-        // Gérer les cas d'action non reconnus (peut-être afficher une page d'erreur)
-        echo 'Action non reconnue';
-        break;
-}
+// Utiliser le routeur
+$router = new Router($twig, $db);
+$router->route();

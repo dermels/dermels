@@ -15,7 +15,7 @@ class AuthController
     private UserRepository $userRepository;
     private Environment $twig;
 
-    public function __construct(PDO $db , Environment $twig)
+    public function __construct(PDO $db, Environment $twig)
     {
         $this->userRepository = new UserRepository($db);
         $this->twig = $twig;
@@ -52,7 +52,7 @@ class AuthController
 
         // Verifies si l'utilisateur existe déjà avant de hacher le mot de passe.
         $user = $this->userRepository->getUser($email);
-        if ($user) {
+        if (!($user->getRoleLevel() != 1)) {
             return $this->twig->render('register/register.twig', [
                 "message" => "Email déjà utilisé"
             ]);
@@ -62,7 +62,13 @@ class AuthController
         $password = password_hash($password, PASSWORD_DEFAULT);
 
         // Créez l'utilisateur.
-        $user = $this->userRepository->createUser( $firstname, $lastname, $password, $email );
+        $user = $this->userRepository->createUser($firstname, $lastname, $password, $email);
+
+        if (!$user) {
+            return $this->twig->render('register/register.twig', [
+                "message" => "Un problème est survenue"
+            ]);
+        }
 
         // Ne stockez que les informations utilisateur nécessaires dans la session.
         $_SESSION['user'] = [
@@ -70,8 +76,9 @@ class AuthController
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
             'email' => $user->getEmail(),
-            'role' => $user->getRole()
+            'roleLevel' => $user->getRoleLevel()
         ];
+
 
         redirect('/home');
 
@@ -108,7 +115,7 @@ class AuthController
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
             'email' => $user->getEmail(),
-            'role' => $user->getRole()
+            'roleLevel' => $user->getRoleLevel()
         ];
 
         redirect('/home');
@@ -116,7 +123,8 @@ class AuthController
 
     public function isAuthenticated(): bool
     {
-        // Retourne true si l'utilisateur est authentifié, sinon false
-        return isset($_SESSION['user']);
+        // Retourne true si l'utilisateur est authentifié, et $_SESSION[USER][roleLevel] != 0
+        return true;
+
     }
 }

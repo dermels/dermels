@@ -39,7 +39,7 @@ class Router
     {
 
         $path = $_SERVER['PATH_INFO'] ?? '/';
-
+        echo json_encode($_SESSION);
         // Vérifiez si la route existe dans le tableau
         if (!array_key_exists($path, $this->routes)) {
             echo $this->handleNotFound();
@@ -48,7 +48,7 @@ class Router
 
         $routeDetails = $this->routes[$path];
         $methodName = $routeDetails['methode'];
-        $requiredRoleLevel = $routeDetails['roleLevel'] ?? 0;
+        $requiredRoleLevel = $routeDetails['roleLevel'];
 
         //verifies que la methode existe
         if (!method_exists($this, $methodName)) {
@@ -67,6 +67,8 @@ class Router
             // Ou si le niveau de rôle de l'utilisateur est inférieur au niveau requis...
             $currentUserLevel = $_SESSION['user']['roleLevel'];
             if ($currentUserLevel < $requiredRoleLevel) {
+                if($currentUserLevel == 0)
+                    redirect('/login');
                 echo $this->handleAccessDenied();
                 return;
             }
@@ -86,11 +88,6 @@ class Router
      */
     private function handleHome($methode): string
     {
-        // Vérifier si l'utilisateur est authentifié
-        if (!$this->authController->isAuthenticated()) {
-            // Si l'utilisateur n'est pas authentifié, rediriger vers la page d'inscription
-            redirect('/register');
-        }
         $controller = new HomeController($this->twig, $this->db);
 
         return match ($methode) {
@@ -105,7 +102,7 @@ class Router
      * @throws LoaderError
      * @throws ReflectionException
      */
-    private function handleRegister($methode): string
+    private function handleRegister($methode): string|null
     {
         // Instancier et appeler le contrôleur approprié
         return match ($methode) {

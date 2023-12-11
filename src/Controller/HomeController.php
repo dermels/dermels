@@ -25,7 +25,8 @@ class HomeController
      * @throws SyntaxError
      * @throws LoaderError
      */
-    public function index() {
+    public function index(): string
+    {
         // Utiliser le modèle pour récupérer tous les articles de blog
         $posts = $this->postModel->getAll();
 

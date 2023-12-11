@@ -19,21 +19,33 @@ class UserRepository
     /**
      * @throws ReflectionException
      */
-    public function createUser($firstname, $lastname, $password, $email)
+    public function createUser($firstname, $lastname, $password, $email): User|false
     {
 
         // verifie qu'aucun user ne soit deja enregistré avec cet email
         $stmt = $this->db->prepare("SELECT * FROM utilisateurs WHERE email = ?");
         $stmt->execute([$email]);
-
         if ($stmt->fetch()) {
             return false;
         }
 
 
-        $stmt = $this->db->prepare("INSERT INTO utilisateurs (firstname, lastname, password, email, role) VALUES (?, ?, ?, ?, 1)");
+        $stmt = $this->db->prepare("INSERT INTO utilisateurs (firstname, lastname, password, email) VALUES (?, ?, ?, ?)");
+        $success = $stmt->execute([$firstname, $lastname, $password, $email]);
 
-        return $this->hydrator->hydrate((array)$stmt->execute([$firstname, $lastname, $password, $email]), new User());
+        if (!$success) {
+            return false;
+        }
+
+        $user = new User();
+        $user->setId($this->db->lastInsertId());
+        $user->setFirstname($firstname);
+        $user->setLastname($lastname);
+        $user->setPassword($password);
+        $user->setEmail($email);
+        $user->setRoleLevel(1);
+
+        return $user;
     }
 
     /**
@@ -43,7 +55,10 @@ class UserRepository
     {
         $stmt = $this->db->prepare("SELECT * FROM utilisateurs WHERE email = ?");
         $stmt->execute([$email]);
-        return $this->hydrator->hydrate((array)$stmt->fetch(), new User());
+        $user = (array)$stmt->fetch();
+        if(!$user)
+            return false;
+        return $this->hydrator->hydrate($user, new User());
     }
 
 }
