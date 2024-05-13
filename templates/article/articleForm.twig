@@ -1,0 +1,49 @@
+{% extends 'base.twig' %}
+{% block title %}Edition{% endblock %}
+
+{% block body %}
+    <div class="formulaire">
+
+        <h1>Edition</h1>
+        {% if message is defined %}
+            <p>{{ message }}</p>
+        {% endif %}
+        <div class="container py-5 main">
+            <div class="row">
+                <div class="col-md-12">
+                    <form method="post">
+                        {% if article is defined %}
+                            <input style="display: none" type="number" name="id" value="{{ article.id }}">
+                        {% endif %}
+                        <div class="form-group row">
+
+                            <div class="col-sm-12">
+
+                                <label for="title">Titre</label>
+                                <input type="text" class="form-control" id="title" name="title"
+                                       value="{{ article ? article.title : '' }}" required>
+                            </div>
+                            <div class="col-sm-12">
+                                <label for="chapo">Chapo</label>
+                                <input type="text" class="form-control" id="chapo" name="chapo"
+                                       value="{{ article ? article.chapo : '' }}" required>
+                            </div>
+                            <div class="col-sm-12">
+                                <label for="content">Contenu</label>
+                                <textarea class="form-control" id="content" name="content"
+                                          required>{{ article ? article.content : '' }}</textarea>
+                            </div>
+                        </div>
+                        <input type="submit" class="btn btn-primary px-4 mt-5" value="{% if article is defined %}Modifier{% else %}Créer{% endif %}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace( 'content' );
+    </script>
+{% endblock %}

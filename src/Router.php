@@ -1,6 +1,8 @@
 <?php
 
+use Controller\ArticleController;
 use Controller\AuthController;
+use Controller\CommentaryController;
 use Controller\HomeController;
 use JetBrains\PhpStorm\NoReturn;
 use Twig\Environment;
@@ -22,8 +24,15 @@ class Router
      * roleLevel 2 = administrateur
      */
     private array $routes = [
-        '/' => ['methode' => 'handleHome', 'roleLevel' => 1],
+        '/' => ['methode' => 'handleHome', 'roleLevel' => 0],
         '/home' => ['methode' => 'handleHome', 'roleLevel' => 1],
+        '/send/mail' => ['methode' => 'sendMail', 'roleLevel' => 0],
+        '/article/edit' => ['methode' => 'handleArticleForm', 'roleLevel' => 2],
+        '/article/list' => ['methode' => 'handleArticleList', 'roleLevel' => 0],
+        '/article/show' => ['methode' => 'handleArticleShow', 'roleLevel' => 0],
+        '/comment/create' => ['methode' => 'handleCommentForm', 'roleLevel' => 1],
+        '/admin/comment/validation' => ['methode' => 'handleCommentValidationAdmin', 'roleLevel' => 2],
+        '/comment/validation' => ['methode' => 'handleCommentValidation', 'roleLevel' => 2],
         '/register' => ['methode' => 'handleRegister', 'roleLevel' => 0],
         '/login' => ['methode' => 'handleLogin', 'roleLevel' => 0],
         '/logout' => ['methode' => 'handleLogout', 'roleLevel' => 1]
@@ -39,7 +48,7 @@ class Router
     {
 
         $path = $_SERVER['PATH_INFO'] ?? '/';
-        echo json_encode($_SESSION);
+
         // Vérifiez si la route existe dans le tableau
         if (!array_key_exists($path, $this->routes)) {
             echo $this->handleNotFound();
@@ -83,6 +92,100 @@ class Router
 
     /**
      * @throws SyntaxError
+     * @throws ReflectionException
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function handleCommentForm($methode): string
+    {
+        $controller = new CommentaryController($this->twig, $this->db);
+        return match ($methode) {
+            'POST' => $controller->submitCommentForm(),
+            default => $this->handleNotFound(),
+        };
+    }
+
+    /**
+     * @throws SyntaxError
+     * @throws ReflectionException
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function handleCommentValidation($methode): string
+    {
+        $controller = new CommentaryController($this->twig, $this->db);
+        return match ($methode) {
+            'GET' => $controller->validateComment(),
+            default => $this->handleNotFound(),
+        };
+    }
+
+    /**
+     * @throws SyntaxError
+     * @throws ReflectionException
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function handleCommentValidationAdmin($methode): string
+    {
+        $controller = new CommentaryController($this->twig, $this->db);
+        return match ($methode) {
+            'GET' => $controller->validateCommentAdmin(),
+            default => $this->handleNotFound(),
+        };
+    }
+
+    /**
+     * @throws SyntaxError
+     * @throws ReflectionException
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function handleArticleForm($methode): string
+    {
+        $controller = new ArticleController($this->twig, $this->db);
+
+        return match ($methode) {
+            'GET' => $controller->showArticleForm(),
+            'POST' => $controller->submitArticleForm(),
+            default => $this->handleNotFound(),
+        };
+    }
+
+    /**
+     * @throws SyntaxError
+     * @throws ReflectionException
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function handleArticleList($methode): string
+    {
+        $controller = new ArticleController($this->twig, $this->db);
+
+        return match ($methode) {
+            'GET' => $controller->showArticleList(),
+            default => $this->handleNotFound(),
+        };
+    }
+
+    /**
+     * @throws SyntaxError
+     * @throws ReflectionException
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function handleArticleShow($methode): string
+    {
+        $controller = new ArticleController($this->twig, $this->db);
+
+        return match ($methode) {
+            'GET' => $controller->showArticle($_GET['id']),
+            default => $this->handleNotFound(),
+        };
+    }
+
+    /**
+     * @throws SyntaxError
      * @throws RuntimeError
      * @throws LoaderError
      */
@@ -100,6 +203,21 @@ class Router
      * @throws SyntaxError
      * @throws RuntimeError
      * @throws LoaderError
+     */
+    private function sendMail($methode): string
+    {
+        $controller = new HomeController($this->twig, $this->db);
+
+        return match ($methode) {
+            'POST' => $controller->sendMail(),
+            default => $this->handleNotFound(),
+        };
+    }
+
+    /**
+     * @throws SyntaxError
+     * @throws RuntimeError
+     * @throws LoaderError
      * @throws ReflectionException
      */
     private function handleRegister($methode): string|null
@@ -107,7 +225,7 @@ class Router
         // Instancier et appeler le contrôleur approprié
         return match ($methode) {
             'GET' => $this->twig->render('register/register.twig'),
-            'POST' => $this->authController->register($_POST),
+            'POST' => $this->authController->register(),
             default => $this->handleNotFound(),
         };
 
@@ -125,7 +243,7 @@ class Router
         // Instancier et appeler le contrôleur approprié
         return match ($methode) {
             'GET' => $this->twig->render('login/login.twig'),
-            'POST' => $this->authController->authenticate($_POST),
+            'POST' => $this->authController->authenticate(),
             default => $this->handleNotFound(),
         };
 

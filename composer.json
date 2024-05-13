@@ -1,7 +1,10 @@
 {
     "require": {
         "twig/twig": "^3.7",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "tinymce/tinymce": "^6.8",
+        "kint-php/kint": "^5.1",
+        "mailjet/mailjet-apiv3-php": "^1.6"
     },
     "autoload": {
         "psr-4": {

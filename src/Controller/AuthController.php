@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Model\User;
 use Model\UserRepository;
 use PDO;
 use ReflectionException;
@@ -28,13 +29,13 @@ class AuthController
      * @throws LoaderError
      * @throws ReflectionException
      */
-    public function register(array $user)
+    public function register()
     {
         // Utilisez trim pour supprimer les espaces avant et après les chaînes.
-        $firstname = htmlspecialchars(trim($user['firstname']));
-        $lastname = htmlspecialchars(trim($user['lastname']));
-        $password = htmlspecialchars(trim($user['password']));
-        $email = htmlspecialchars(trim($user['email']));
+        $firstname = htmlspecialchars(trim($_POST['firstname']));
+        $lastname = htmlspecialchars(trim($_POST['lastname']));
+        $password = htmlspecialchars(trim($_POST['password']));
+        $email = htmlspecialchars(trim($_POST['email']));
 
         // Si les paramètres sont vides après le nettoyage, retournez immédiatement.
         if (empty($firstname) || empty($lastname) || empty($password) || empty($email)) {
@@ -51,7 +52,7 @@ class AuthController
         }
 
         // Verifies si l'utilisateur existe déjà avant de hacher le mot de passe.
-        $user = $this->userRepository->getUser($email);
+        $user = $this->userRepository->getUserByMail($email);
         if (!($user->getRoleLevel() != 1)) {
             return $this->twig->render('register/register.twig', [
                 "message" => "Email déjà utilisé"
@@ -62,7 +63,7 @@ class AuthController
         $password = password_hash($password, PASSWORD_DEFAULT);
 
         // Créez l'utilisateur.
-        $user = $this->userRepository->createUser($firstname, $lastname, $password, $email);
+        $user = $this->userRepository->createUser(new User( $firstname, $lastname, $password, $email ));
 
         if (!$user) {
             return $this->twig->render('register/register.twig', [
@@ -91,12 +92,14 @@ class AuthController
      * @throws LoaderError
      * @throws ReflectionException
      */
-    public function authenticate(array $userData)
+    public function authenticate()
     {
-        $email = htmlspecialchars(trim($userData['email']));
-        $password = htmlspecialchars(trim($userData['password']));
 
-        $user = $this->userRepository->getUser($email);
+        $email = htmlspecialchars(trim($_POST['email']));
+        $password = htmlspecialchars(trim($_POST['password']));
+
+        $user = $this->userRepository->getUserByMail($email);
+
         if (!$user) {
             return $this->twig->render('login/login.twig', [
                 'message' => "Email incorrect"
@@ -118,13 +121,22 @@ class AuthController
             'roleLevel' => $user->getRoleLevel()
         ];
 
+
         redirect('/home');
     }
 
-    public function isAuthenticated(): bool
-    {
-        // Retourne true si l'utilisateur est authentifié, et $_SESSION[USER][roleLevel] != 0
-        return true;
+    function isAuthenticated() {
+        // La session est démarrée si elle n'a pas déjà été démarrée
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
+        // Vérification que la clé 'user' existe dans le tableau de session
+        // et que le role est supérieur à 0
+        if (isset($_SESSION['user']) && $_SESSION['user']['roleLevel'] > 0) {
+            return true;
+        }
+
+        return false;
     }
 }

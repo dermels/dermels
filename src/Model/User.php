@@ -5,20 +5,19 @@ namespace Model;
 class User
 {
     private ?int $id = null;
-    private string $firstname;
-    private string $lastname;
-    private string $password;
-    private string $email;
-    private string $roleLevel;
+    private ?string $firstname;
+    private ?string $lastname;
+    private ?string $password;
+    private ?string $email;
+    private ?int $roleLevel;
 
-    public function __construct()
+    public function __construct( $firstname = '', $lastname = '', $password = '', $email = '', $roleLevel = 1)
     {
-        // Définissez des valeurs par défaut pour les propriétés
-        $this->firstname = '';
-        $this->lastname = '';
-        $this->password = '';
-        $this->email = '';
-        $this->roleLevel = 0;
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
+        $this->password = $password;
+        $this->email = $email;
+        $this->roleLevel = $roleLevel;
     }
 
     // getters et setters pour chaque propriété

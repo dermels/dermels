@@ -1,31 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription</title>
-</head>
-<body>
-    <h2>Inscription</h2>
-    {% if message is defined %}
-        <p>{{ message }}</p>
-    {% endif %}
-    <form action="{{ path('register') }}" method="post">
-        <label for="firstname">Prénom:</label>
-        <input type="text" id="firstname" name="firstname" required><br>
+{% extends 'base.twig' %}
+{% block title %}Inscription{% endblock %}
+{% block body %}
+    <div class="formulaire">
 
-        <label for="lastname">Nom de famille:</label>
-        <input type="text" id="lastname" name="lastname" required><br>
+        <h3>Inscription</h3>
+        {% if message is defined %}
+            <p>{{ message }}</p>
+        {% endif %}
+        <div class="container py-5 main">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="{{ path('register') }}" method="post">
+                        <div class="form-group row">
 
-        <label for="password">Mot de passe:</label>
-        <input type="password" id="password" name="password" required><br>
-
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" required><br>
-
-        <input type="submit" value="S'inscrire">
-    </form>
-    <p>Déjà inscrit ? <a href="{{ path('login') }}">Se connecter</a></p>
-
-</body>
-</html>
+                            <div class="col-sm-6">
+                                <input class="form-control" type="text" id="firstname" name="firstname"
+                                       placeholder="Prénom" required><br>
+                            </div>
+                            <div class="col-sm-6">
+                                <input class="form-control" type="text" id="lastname" name="lastname" placeholder="Nom"
+                                       required><br>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <input class="form-control" type="password" id="password" name="password"
+                                       placeholder="Mot de passe" required><br>
+                            </div>
+                            <div class="col-sm-12">
+                                <input class="form-control" type="email" id="email" name="email" placeholder="Email"
+                                       required><br>
+                            </div>
+                        </div>
+                        <input type="submit" class="btn btn-primary px-4" value="S'inscrire">
+                    </form>
+                    <p class="m-3">Déjà inscrit ? <a href="{{ path('login') }}">Se connecter</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

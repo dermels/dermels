@@ -1,0 +1,185 @@
+{% extends 'base.twig' %}
+
+{% block body %}
+    <section class="blog-single">
+        <div class="container">
+            <div class="main-contant">
+                <div class="row">
+                    {% if isAdmin() %}
+                            <a href="{{ path('article/edit') }}?id={{ article.id }}" class="btn btn-primary ml-auto mr-0" style="width: 30%;min-width: 200px">Modifier
+                                l'article</a>
+                    {% endif %}
+                    <div class="col-sm-12">
+                        <h3>{{ article.title | raw }}</h3>
+                        <p>{{ article.content | raw }}</p>
+
+                        <div>
+                            <span>Auteur : {{ auteur.firstname }} {{ auteur.lastname }}</span><br/>
+                            <span>Posté le : {{ article.dateCreation| date("d/m/Y") }}</span>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                {%  if isConnected() %}
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h2>Faire un commentaire</h2>
+                    </div>
+                </div>
+                <form class="form" action="{{ path('comment/create') }}?articleId={{ article.id }}" method="post">
+                    <div class="form-row">
+                        <div class="col-md-12 mb-3">
+                            <textarea class="form-control" rows="5" name="content" placeholder="Entrer ton commentaire"
+                                      required></textarea>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Ajouter un commentaire</button>
+                </form>
+                {% endif %}
+
+                <div class="post">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h2>Commentaires</h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        {% for comment in commentaries %}
+                            <div class="col-lg-6 col-md-12 col-12">
+                                <div class="col1">
+                                    <p>
+                                        <strong>
+                                            <span>{{ comment.dateCreation| date("d/m/Y") }}</span>
+                                            {{ comment.author.firstname }} {{ comment.author.lastname }}
+                                        </strong>
+                                        {{ comment.content }}
+                                    </p>
+                                    {% if isAdmin() %}
+                                        {% if comment.isvalid == false %}
+                                            <button id="validationButton_{{ comment.id }}" type="button"
+                                                    class="btn btn-success px-4 mt-5"
+                                                    onClick="changeValidation({{ comment.id }})">Valider
+                                            </button>
+                                        {% else %}
+                                            <button id="validationButton_{{ comment.id }}" type="button"
+                                                    class="btn btn-danger px-4 mt-5"
+                                                    onClick="changeValidation({{ comment.id }})">
+                                                Invalider
+                                            </button>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {#   BARRE DE PAGINATION     #}
+                    {% set total_pages = (total / limit)|round(0, 'ceil') %}
+                    {% set display_pages = min(10, total_pages) %}
+                    {% set start_page = max(1, current_page - (display_pages / 2)|round(0, 'floor')) %}
+                    {% set end_page = min(total_pages, start_page + display_pages - 1) %}
+                    {% set start_page = max(1, min(start_page, total_pages - display_pages + 1)) %}
+
+                    <div class="pagination mt-5">
+                        <ul class="pagination justify-content-end w-100">
+
+                            <form class="d-flex flex-row form-inline mr-3" style="min-width: 60px">
+                                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="limitSelect"
+                                        onchange="location = this.value;">
+                                    <option value="{{ path('article/show') }}?id={{ article.id }}&current_page=1&limit=5"
+                                            {% if limit == 1 %}selected{% endif %}>1
+                                    <option value="{{ path('article/show') }}?id={{ article.id }}&current_page=1&limit=5"
+                                            {% if limit == 5 %}selected{% endif %}>5
+                                    </option>
+                                    <option value="{{ path('article/show') }}?id={{ article.id }}&current_page=1&limit=10"
+                                            {% if limit == 10 %}selected{% endif %}>10
+                                    </option>
+                                    <option value="{{ path('article/show') }}?id={{ article.id }}&current_page=1&limit=20"
+                                            {% if limit == 20 %}selected{% endif %}>20
+                                    </option>
+                                </select>
+                            </form>
+                            {% if current_page > 1 %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       href="{{ path('article/show') }}?id={{ article.id }}&current_page={{ current_page - 1 }}&limit={{ limit }}">&lt;</a>
+                                </li>
+                            {% endif %}
+                            <li class="page-item {% if 1 == current_page %} active{% endif %}">
+                                <a class="page-link"
+                                   href="{{ path('article/show') }}?id={{ article.id }}&current_page=1&limit={{ limit }}">1</a>
+                            </li>
+                            {% if start_page > 1 %}
+                                <li class="page-item">
+                                    {% if start_page == 2 %}
+                                        <a class="page-link" href="{{ path('article/show') }}?id={{ article.id }}&current_page=2&limit={{ limit }}">2</a>
+                                    {% else %}
+                                        <span class="page-link">...</span>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                            {% if total_pages > 2 %}
+                                {% for page in start_page+1..end_page-1 %}
+                                    <li class="page-item{% if page == current_page %} active{% endif %}">
+                                        <a class="page-link"
+                                           href="{{ path('article/show') }}?id={{ article.id }}&current_page={{ page }}&limit={{ limit }}">{{ page }}</a>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                            {% if end_page < total_pages %}
+                                <li class="page-item">
+                                    {% if end_page == total_pages - 1 %}
+                                        <a class="page-link"
+                                           href="{{ path('article/show') }}?id={{ article.id }}&current_page={{ total_pages - 1 }}&limit={{ limit }}">{{ total_pages - 1 }}</a>
+                                    {% else %}
+                                        <span class="page-link">...</span>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                            {% if total_pages > 1 %}
+                                <li class="page-item {% if total_pages == current_page %} active{% endif %}">
+                                    <a class="page-link"
+                                       href="{{ path('article/show') }}?id={{ article.id }}&current_page={{ total_pages }}&limit={{ limit }}">{{ total_pages }}</a>
+                                </li>
+                            {% endif %}
+                            {% if total_pages > current_page %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       href="{{ path('article/show') }}?id={{ article.id }}&current_page={{ current_page + 1 }}&limit={{ limit }}">&gt;</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {# FIN DE LA BARRE DE PAGINATION #}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        function changeValidation(id) {
+            fetch("{{ path('comment/validation') }}?commentId=" + id)
+                .then(response => response.json())
+                .then(data => {
+
+                    if (data.code === 200) {
+                        let button = document.getElementById("validationButton_" + id);
+                        if (button.classList.contains("btn-success")) {
+                            button.classList.remove("btn-success");
+                            button.classList.add("btn-danger");
+                            button.innerHTML = "Invalider";
+                        } else {
+                            button.classList.remove("btn-danger");
+                            button.classList.add("btn-success");
+                            button.innerHTML = "Valider";
+                        }
+                        alert("Commentaire validé avec succès");
+                    } else {
+                        alert("Erreur lors de la validation du commentaire");
+                    }
+
+                });
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,28 @@
+
+
+<nav class="navbar navbar-expand-lg navbar-dark cyan fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="{{ path('home') }}">
+            <img src="{{ asset('images/nav-logo.png') }}" alt="nav-logo">
+        </a>
+        <a class="nav-link" href="{{ path('article/list') }}?page=1">Articles</a>
+        {%  if isAdmin() %}
+            <a class="nav-link" href="{{ path('article/edit') }}">Edition</a>
+            <a class="nav-link" href="{{ path('admin/comment/validation') }}">Commentaires</a>
+        {% endif %}
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-4" aria-controls="navbarSupportedContent-4" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent-4">
+            <ul class="navbar-nav ml-auto">
+
+                {% if isConnected() %}
+                    <li class="nav-item"><a class="nav-link" href="{{ path('logout') }}">Déconnexion</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{{ path('login') }}">Connexion</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ path('register') }}">Inscription</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

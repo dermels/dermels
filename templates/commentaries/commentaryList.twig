@@ -1,0 +1,156 @@
+{% extends 'base.twig' %}
+
+{% block body %}
+<section class="blog-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 left-side">
+                <h2>Commentaires</h2>
+                <div class="row">
+                    {% for comment in commentaries %}
+                        <br/>
+                        <div class="col-md-5 m-2">
+                            <h4 class="pb-1">
+                                    {{ comment.content  }}
+                            </h4>
+                            <div class="row">
+                                <p class="col-9 mt-2">Posté le : {{ comment.dateCreation |date("d/m/Y") }}</p>
+                                <div>
+                                    <div class="btn-group">
+                                        <a href="{{ path('article/show') }}?id={{ comment.articleId }}"
+                                           class="btn btn-danger mb-0">Voir</a>
+
+                                        {% if comment.isvalid == false %}
+                                            <button id="validationButton_{{ comment.id }}" type="button"
+                                                    class="btn btn-success"
+                                                    onClick="changeValidation({{ comment.id }})">Valider
+                                            </button>
+                                        {% else %}
+                                            <button id="validationButton_{{ comment.id }}" type="button"
+                                                    class="btn btn-warning mb-0"
+                                                    onClick="changeValidation({{ comment.id }})">
+                                                Invalider
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+
+
+
+        {#   BARRE DE PAGINATION     #}
+        {% set total_pages = (total / limit)|round(0, 'ceil') %}
+        {% set display_pages = min(10, total_pages) %}
+        {% set start_page = max(1, current_page - (display_pages / 2)|round(0, 'floor')) %}
+        {% set end_page = min(total_pages, start_page + display_pages - 1) %}
+        {% set start_page = max(1, min(start_page, total_pages - display_pages + 1)) %}
+
+        <div class="pagination mt-5">
+            <ul class="pagination justify-content-end w-100">
+
+                <form class="d-flex flex-row form-inline mr-3" style="min-width: 60px">
+                    <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="limitSelect"
+                            onchange="location = this.value;">
+                        <option value="{{ path('admin/comment/validation') }}?current_page=1&limit=5"
+                                {% if limit == 1 %}selected{% endif %}>1
+                        <option value="{{ path('admin/comment/validation') }}?current_page=1&limit=5"
+                                {% if limit == 5 %}selected{% endif %}>5
+                        </option>
+                        <option value="{{ path('admin/comment/validation') }}?current_page=1&limit=10"
+                                {% if limit == 10 %}selected{% endif %}>10
+                        </option>
+                        <option value="{{ path('admin/comment/validation') }}?current_page=1&limit=20"
+                                {% if limit == 20 %}selected{% endif %}>20
+                        </option>
+                    </select>
+                </form>
+                {% if current_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="{{ path('admin/comment/validation') }}?current_page={{ current_page - 1 }}&limit={{ limit }}">&lt;</a>
+                    </li>
+                {% endif %}
+                <li class="page-item {% if 1 == current_page %} active{% endif %}">
+                    <a class="page-link"
+                       href="{{ path('admin/comment/validation') }}?current_page=1&limit={{ limit }}">1</a>
+                </li>
+                {% if start_page > 1 %}
+                    <li class="page-item">
+                        {% if start_page == 2 %}
+                            <a class="page-link" href="{{ path('admin/comment/validation') }}?current_page=2&limit={{ limit }}">2</a>
+                        {% else %}
+                            <span class="page-link">...</span>
+                        {% endif %}
+                    </li>
+                {% endif %}
+                {% if total_pages > 2 %}
+                    {% for page in start_page+1..end_page-1 %}
+                        <li class="page-item{% if page == current_page %} active{% endif %}">
+                            <a class="page-link"
+                               href="{{ path('admin/comment/validation') }}?current_page={{ page }}&limit={{ limit }}">{{ page }}</a>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+                {% if end_page < total_pages %}
+                    <li class="page-item">
+                        {% if end_page == total_pages - 1 %}
+                            <a class="page-link"
+                               href="{{ path('admin/comment/validation') }}?current_page={{ total_pages - 1 }}&limit={{ limit }}">{{ total_pages - 1 }}</a>
+                        {% else %}
+                            <span class="page-link">...</span>
+                        {% endif %}
+                    </li>
+                {% endif %}
+                {% if total_pages > 1 %}
+                    <li class="page-item {% if total_pages == current_page %} active{% endif %}">
+                        <a class="page-link"
+                           href="{{ path('admin/comment/validation') }}?current_page={{ total_pages }}&limit={{ limit }}">{{ total_pages }}</a>
+                    </li>
+                {% endif %}
+                {% if total_pages > current_page %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="{{ path('admin/comment/validation') }}?current_page={{ current_page + 1 }}&limit={{ limit }}">&gt;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+        {# FIN DE LA BARRE DE PAGINATION #}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        function changeValidation(id) {
+            fetch("{{ path('comment/validation') }}?commentId=" + id)
+                .then(response => response.json())
+                .then(data => {
+
+                    if (data.code === 200) {
+                        let button = document.getElementById("validationButton_" + id);
+                        if (button.classList.contains("btn-success")) {
+                            button.classList.remove("btn-success");
+                            button.classList.add("btn-warning");
+                            button.innerHTML = "Invalider";
+                        } else {
+                            button.classList.remove("btn-warning");
+                            button.classList.add("btn-success");
+                            button.innerHTML = "Valider";
+                        }
+                        alert("Commentaire validé avec succès");
+                    } else {
+                        alert("Erreur lors de la validation du commentaire");
+                    }
+
+                });
+        }
+    </script>
+{% endblock %}
