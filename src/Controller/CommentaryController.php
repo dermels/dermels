@@ -81,7 +81,7 @@ class CommentaryController
         $comment->setArticleId($articleId);
         $this->commentaryRepository->save($comment);
         header('Location: ' . (MODE === 'dev' ? '/index.php/' : '/') . 'article/show?id=' . $articleId);
-        exit();
+        return  '';
     }
 
 

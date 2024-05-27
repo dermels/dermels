@@ -74,7 +74,7 @@ class ArticleController
         }
 
         header('Location: '. (MODE === 'dev' ? '/index.php/' : '/') . 'article/show?id=' . $article->getId());
-        exit();
+        return  '';
     }
 
     /**
@@ -88,7 +88,7 @@ class ArticleController
         $article = $this->articleRepository->getArticle($id);
         if (!$article) {
             header('Location: '. (MODE === 'dev' ? '/index.php/' : '/') . 'article/list');
-            exit();
+            return  '';
         }
         $auteur = $this->userRepository->getUser($article->getAuthorId());
 
@@ -144,6 +144,6 @@ class ArticleController
 
         $this->articleRepository->delete($id);
         header('Location: '. (MODE === 'dev' ? '/index.php/' : '/') . 'article/list');
-        exit();
+        return  '';
     }
 }

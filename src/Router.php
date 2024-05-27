@@ -87,7 +87,7 @@ class Router
 
 
         // sinon, appeler la méthode appropriée
-        echo $this->$methodName($_SERVER['REQUEST_METHOD']);
+        echo $this->$methodName($_SERVER['REQUEST_METHOD'] ?? 'handleNotFound');
 
     }
 
@@ -291,5 +291,4 @@ class Router
 function redirect($path): void
 {
     header('Location:' . (MODE === 'dev' ? "/index.php" : "") . $path);
-    exit();
 }

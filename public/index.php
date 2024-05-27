@@ -15,7 +15,6 @@ try {
 //    echo 'Connexion réussie' ;
 } catch (PDOException $e) {
     echo 'error 500 : ' . $e->getMessage();
-    die;
 }
 // Démarrer la session
 session_start();

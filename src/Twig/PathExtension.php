@@ -47,7 +47,7 @@ class PathExtension extends AbstractExtension
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        return isset($_SESSION['user']) && $_SESSION['user']['roleLevel'] > 0;
+        return isset($_SESSION['user']) && ($_SESSION['user']['roleLevel'] ?? 0) > 0;
 
     }
 
@@ -56,7 +56,7 @@ class PathExtension extends AbstractExtension
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        return isset($_SESSION['user']) && $_SESSION['user']['roleLevel'] > 1;
+        return isset($_SESSION['user']) && ($_SESSION['user']['roleLevel'] ?? 0) > 1;
     }
 
     public function dump($var): void
