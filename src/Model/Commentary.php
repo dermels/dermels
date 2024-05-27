@@ -18,6 +18,8 @@ class Commentary
 
     private ?bool $isValid;
 
+    private ?User $author;
+
     // constructeur
     public function __construct($id = null, $content = '', $author_id = null, $article_id = null, $isValid = false, $author = null)
     {
@@ -26,7 +28,7 @@ class Commentary
         $this->author_id = $author_id;
         $this->article_id = $article_id;
         $this->isValid = $isValid;
-        $this->author = null;
+        $this->author = $author;
     }
 
     public function getId(): ?int

@@ -307,6 +307,7 @@ nav {
     top: -13px;
     right: -20px;
     transition: 0.5s;
+    text-decoration: underline;
     font-size: 28px;
 }
 
@@ -408,7 +409,8 @@ nav {
 }
 
 #portfolio h4 {
-    font-size: 15px;
+    text-decoration: underline;
+    font-size: 28px !important;
     color: #8d8d8d;
     font-weight: 500;
     line-height: 28px;
@@ -512,7 +514,8 @@ nav {
 }
 
 .blog .left-side h4 {
-    font-size: 22px;
+    text-decoration: underline;
+    font-size: 28px !important;
     padding-bottom: 20px;
 }
 
@@ -951,7 +954,8 @@ footer .img-thumbnail {
 }
 
 .blog-page .left-side h4 {
-    font-size: 22px;
+    text-decoration: underline;
+    font-size: 28px !important;
     padding-bottom: 20px;
 }
 
@@ -1510,7 +1514,7 @@ footer .img-thumbnail {
     font-family: 'Playfair Display', serif;
 }
 
-.blog-single p:nth-child(4) {
+.blog-single h4 {
     padding: 10px 100px;
     font-size: 24px;
     font-weight: 400;
@@ -1644,7 +1648,8 @@ footer .img-thumbnail {
 }
 
 .blog-single h4 {
-    font-size: 15px;
+    text-decoration: underline;
+    font-size: 28px !important;
     color: #8d8d8d;
     font-weight: 500;
     line-height: 28px;
@@ -2012,7 +2017,7 @@ footer .img-thumbnail {
         line-height: 30px;
         padding-bottom: 10px;
     }
-    .blog-single p:nth-child(4) {
+    .blog-single h4 {
         padding: 0 80px;
         padding-bottom: 30px;
         font-size: 20px;
@@ -2306,7 +2311,7 @@ footer .img-thumbnail {
         line-height: 26px;
         padding-bottom: 0;
     }
-    .blog-single p:nth-child(4) {
+    .blog-single h4 {
         padding: 0 50px;
         padding-bottom: 20px;
         font-size: 18px;
@@ -2500,7 +2505,7 @@ footer .img-thumbnail {
         letter-spacing: 0.5px;
         padding: 20px 0;
     }
-    .blog-single p:nth-child(4) {
+    .blog-single h4 {
         padding: 0;
         padding-bottom: 15px;
         font-size: 16px;
@@ -2577,7 +2582,7 @@ footer .img-thumbnail {
         font-size: 12px;
         line-height: 22px;
     }
-    .blog-single p:nth-child(4) {
+    .blog-single h4 {
         font-size: 14px;
         line-height: 30px;
     }

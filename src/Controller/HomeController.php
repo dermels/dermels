@@ -15,7 +15,7 @@ class HomeController
 {
     private Environment $twig;
 
-    public function __construct(Environment $twig, PDO $db) {
+    public function __construct(Environment $twig) {
         $this->twig = $twig;
     }
 

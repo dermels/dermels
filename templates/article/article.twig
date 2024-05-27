@@ -8,10 +8,18 @@
                     {% if isAdmin() %}
                             <a href="{{ path('article/edit') }}?id={{ article.id }}" class="btn btn-primary ml-auto mr-0" style="width: 30%;min-width: 200px">Modifier
                                 l'article</a>
+                            <a href="{{ path('article/delete') }}?id={{ article.id }}" style="width: 30%;min-width: 265px;background-color: #dc3545;border-color: #dc3545" class="btn btn-primary ml-1 mr-0" >Supprimer
+                                l'article</a>
                     {% endif %}
                     <div class="col-sm-12">
                         <h3>{{ article.title | raw }}</h3>
-                        <p>{{ article.content | raw }}</p>
+
+                        <h4>
+                            {{ article.chapo | raw }}
+                        </h4>
+                        <p>
+                            {{ article.content | raw }}
+                        </p>
 
                         <div>
                             <span>Auteur : {{ auteur.firstname }} {{ auteur.lastname }}</span><br/>
