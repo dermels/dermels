@@ -30,6 +30,7 @@ class Router
         '/article/edit' => ['methode' => 'handleArticleForm', 'roleLevel' => 2],
         '/article/list' => ['methode' => 'handleArticleList', 'roleLevel' => 0],
         '/article/show' => ['methode' => 'handleArticleShow', 'roleLevel' => 0],
+        '/article/delete' => ['methode' => 'handleArticleDelete', 'roleLevel' => 2],
         '/comment/create' => ['methode' => 'handleCommentForm', 'roleLevel' => 1],
         '/admin/comment/validation' => ['methode' => 'handleCommentValidationAdmin', 'roleLevel' => 2],
         '/comment/validation' => ['methode' => 'handleCommentValidation', 'roleLevel' => 2],
@@ -148,6 +149,22 @@ class Router
         return match ($methode) {
             'GET' => $controller->showArticleForm(),
             'POST' => $controller->submitArticleForm(),
+            default => $this->handleNotFound(),
+        };
+    }
+
+    /**
+     * @throws SyntaxError
+     * @throws ReflectionException
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function handleArticleDelete($methode): string
+    {
+        $controller = new ArticleController($this->twig, $this->db);
+
+        return match ($methode) {
+            'GET' => $controller->deleteArticle(),
             default => $this->handleNotFound(),
         };
     }

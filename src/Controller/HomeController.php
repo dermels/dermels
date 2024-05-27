@@ -5,7 +5,6 @@ namespace Controller;
 
 use Mailjet\Client;
 use Mailjet\Resources;
-use Model\PostModel;
 use PDO;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -15,11 +14,9 @@ use Twig\Error\SyntaxError;
 class HomeController
 {
     private Environment $twig;
-    private PostModel $postModel;
 
     public function __construct(Environment $twig, PDO $db) {
         $this->twig = $twig;
-        $this->postModel = new PostModel($db);
     }
 
     /**
@@ -29,13 +26,8 @@ class HomeController
      */
     public function index(): string
     {
-        // Utiliser le modèle pour récupérer tous les articles de blog
-        $posts = $this->postModel->getAll();
-
-        // Utiliser Twig pour afficher la page d'accueil
         return $this->twig->render('home/home.twig', [
-            'page_title' => 'Mon Blog',
-            'posts' => $posts,
+            'page_title' => 'Accueil',
         ]);
     }
 

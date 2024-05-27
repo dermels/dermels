@@ -72,6 +72,19 @@ class ArticleRepository extends Hydrator
 
     }
 
+    // ajouter la suppression des commentaires en cascade
+//ALTER TABLE commentaires DROP FOREIGN KEY commentaires_ibfk_1;
+//ALTER TABLE commentaires ADD CONSTRAINT commentaires_ibfk_1 FOREIGN KEY (article_id)
+//REFERENCES articles(id) ON DELETE CASCADE;
+    public function delete($id): bool
+    {
+        $query = 'DELETE FROM articles WHERE id = :id';
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':id', $id);
+        return $stmt->execute();
+    }
+
+
     /**
      * @throws ReflectionException
      */

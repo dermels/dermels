@@ -86,6 +86,10 @@ class ArticleController
     public function showArticle($id): string
     {
         $article = $this->articleRepository->getArticle($id);
+        if (!$article) {
+            header('Location: '. (MODE === 'dev' ? '/index.php/' : '/') . 'article/list');
+            exit();
+        }
         $auteur = $this->userRepository->getUser($article->getAuthorId());
 
         $current_page = $_GET['current_page'] ?? 1;
@@ -119,5 +123,27 @@ class ArticleController
             'limit' => $limit
         ]);
 
+    }
+
+
+    /**
+     * @throws SyntaxError
+     * @throws ReflectionException
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function deleteArticle(): string
+    {
+        $id = $_GET['id'] ?? null;
+        $article = $this->articleRepository->getArticle($id);
+        if (!$article) {
+            return $this->twig->render('article/articleList.twig', [
+                "message" => "L'article demandé n'existe pas."
+            ]);
+        }
+
+        $this->articleRepository->delete($id);
+        header('Location: '. (MODE === 'dev' ? '/index.php/' : '/') . 'article/list');
+        exit();
     }
 }
