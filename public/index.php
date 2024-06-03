@@ -13,7 +13,7 @@ require_once '../src/router.php';
 try {
     $db = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASSWORD);
 } catch (PDOException $e) {
-    print 'error 500 : ' . $e->getMessage();
+    print 'error 500 : ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
 }
 // Démarrer la session
 session_start();
