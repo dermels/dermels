@@ -196,7 +196,7 @@ class Router
         $controller = new ArticleController($this->twig, $this->db);
 
         return match ($methode) {
-            'GET' => $controller->showArticle($_GET['id']),
+            'GET' => $controller->showArticle(),
             default => $this->handleNotFound(),
         };
     }

@@ -39,8 +39,10 @@ class ArticleController
     {
         $params = [];
 
-        if (isset($_GET['id'])) {
-            $article = $this->articleRepository->getArticle($_GET['id']);
+        $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+
+        if ($id) {
+            $article = $this->articleRepository->getArticle($id);
             if (!$article) {
                 return $this->twig->render('article/articleForm.twig', [
                     "message" => "L'article demandé n'existe pas."
@@ -61,10 +63,15 @@ class ArticleController
     public function submitArticleForm(): string
     {
         // enleve uniquement les balises <script> et <style> du contenu
-        $id = $_POST['id'] ?? null;
-        $content = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $_POST['content']);
-        $chapo = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', "", $_POST['chapo']);
-        $title = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', "", $_POST['title']);
+
+        $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) ?: null;
+        $contentInput = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_STRING);
+        $chapoInput = filter_input(INPUT_POST, 'chapo', FILTER_SANITIZE_STRING);
+        $titleInput = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING);
+
+        $content = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $contentInput);
+        $chapo = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', "", $chapoInput);
+        $title = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', "", $titleInput);
 
         $article = $this->articleRepository->save(new Article($id, $title, $chapo, $content, $_SESSION['user']['id']));
         if (!$article) {
@@ -83,8 +90,9 @@ class ArticleController
      * @throws RuntimeError
      * @throws LoaderError
      */
-    public function showArticle($id): string
+    public function showArticle(): string
     {
+        $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $article = $this->articleRepository->getArticle($id);
         if (!$article) {
             header('Location: '. (MODE === 'dev' ? '/index.php/' : '/') . 'article/list');
@@ -92,8 +100,8 @@ class ArticleController
         }
         $auteur = $this->userRepository->getUser($article->getAuthorId());
 
-        $current_page = $_GET['current_page'] ?? 1;
-        $limit = $_GET['limit'] ?? 10;
+        $current_page = filter_input(INPUT_GET, 'current_page', FILTER_VALIDATE_INT, ["options" => ["default" => 1]]);
+        $limit = filter_input(INPUT_GET, 'limit', FILTER_VALIDATE_INT, ["options" => ["default" => 10]]);
 
         $commentaries = $this->commentaryRepository->getCommentaries(null, $current_page, $limit);
         return $this->twig->render('article/article.twig', ['article' => $article, 'auteur' => $auteur, 'commentaries' => $commentaries['data'], 'total' => $commentaries['total'], 'current_page' => $current_page, 'limit' => $limit]);
@@ -107,8 +115,8 @@ class ArticleController
      */
     public function showArticleList(): string
     {
-        $current_page = $_GET['current_page'] ?? 1;
-        $limit = $_GET['limit'] ?? 10;
+        $current_page = filter_input(INPUT_GET, 'current_page', FILTER_SANITIZE_NUMBER_INT) ?: 1;
+        $limit = filter_input(INPUT_GET, 'limit', FILTER_SANITIZE_NUMBER_INT) ?: 10;
         $data = $this->articleRepository->getArticlesList($current_page, $limit) ?? null;
 
         $data['data'] = array_map(function ($article) {
@@ -134,8 +142,7 @@ class ArticleController
      */
     public function deleteArticle(): string
     {
-        $id = $_GET['id'] ?? null;
-        $article = $this->articleRepository->getArticle($id);
+        $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);        $article = $this->articleRepository->getArticle($id);
         if (!$article) {
             return $this->twig->render('article/articleList.twig', [
                 "message" => "L'article demandé n'existe pas."

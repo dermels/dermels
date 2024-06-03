@@ -38,10 +38,10 @@ class HomeController
      */
     public function sendMail(): string
     {
-        $nom = $_POST['nom'];
-        $email = $_POST['email'];
-        $telephone = $_POST['telephone'];
-        $message = $_POST['message'];
+        $nom = filter_input(INPUT_POST, 'nom', FILTER_SANITIZE_STRING);
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+        $telephone = filter_input(INPUT_POST, 'telephone', FILTER_SANITIZE_STRING);
+        $message = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
 
         $mj = new Client(MAILJET_API_KEY, MAILJET_API_SECRET,true, ['version' => 'v3.1']);
 

@@ -32,10 +32,10 @@ class AuthController
     public function register()
     {
         // Utilisez trim pour supprimer les espaces avant et après les chaînes.
-        $firstname = htmlspecialchars(trim($_POST['firstname']));
-        $lastname = htmlspecialchars(trim($_POST['lastname']));
-        $password = htmlspecialchars(trim($_POST['password']));
-        $email = htmlspecialchars(trim($_POST['email']));
+        $firstname = filter_input(INPUT_POST, 'firstname', FILTER_SANITIZE_STRING);
+        $lastname = filter_input(INPUT_POST, 'lastname', FILTER_SANITIZE_STRING);
+        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
 
         // Si les paramètres sont vides après le nettoyage, retournez immédiatement.
         if (empty($firstname) || empty($lastname) || empty($password) || empty($email)) {
@@ -95,8 +95,9 @@ class AuthController
     public function authenticate()
     {
 
-        $email = htmlspecialchars(trim($_POST['email']));
-        $password = htmlspecialchars(trim($_POST['password']));
+
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
 
         $user = $this->userRepository->getUserByMail($email);
 

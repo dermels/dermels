@@ -38,8 +38,7 @@ class CommentaryController
     public function validateComment(): string
     {
         // inverse le statut de validation du commentaire
-        $commentId = $_GET['commentId'] ?? null;
-        if ($commentId) {
+        $commentId = filter_input(INPUT_GET, 'commentId', FILTER_SANITIZE_NUMBER_INT) ?: null;        if ($commentId) {
             $comment = $this->commentaryRepository->getCommentary((int) $commentId);
         } else {
             return $this->twig->render('article/articleList.twig', [
@@ -60,7 +59,7 @@ class CommentaryController
      */
     public function submitCommentForm(): string
     {
-        $articleId = $_GET['articleId'];
+        $articleId = filter_input(INPUT_GET, 'articleId', FILTER_SANITIZE_NUMBER_INT);
         $article = $this->articleRepository->getArticle($articleId);
         if (!$article) {
             return $this->twig->render('article/articleList.twig', [
@@ -68,7 +67,7 @@ class CommentaryController
             ]);
         }
         $comment = new Commentary();
-        $content = $_POST['content'];
+        $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_STRING);
         if (empty($content)) {
             return $this->twig->render('article/articleShow.twig', [
                 "article" => $article,
@@ -76,7 +75,7 @@ class CommentaryController
             ]);
         }
         //enleve uniquement les balises <script> et <style> et html du contenu
-        $comment->setContent(strip_tags($_POST['content']));
+        $comment->setContent(strip_tags($content));
         $comment->setAuthorId($_SESSION['user']['id']);
         $comment->setArticleId($articleId);
         $this->commentaryRepository->save($comment);
@@ -93,8 +92,8 @@ class CommentaryController
      */
     public function validateCommentAdmin(): string
     {
-        $current_page = $_GET['current_page'] ?? 1;
-        $limit = $_GET['limit'] ?? 10;
+        $current_page = filter_input(INPUT_GET, 'current_page', FILTER_SANITIZE_NUMBER_INT) ?: 1;
+        $limit = filter_input(INPUT_GET, 'limit', FILTER_SANITIZE_NUMBER_INT) ?: 10;
 
         $commentaries = $this->commentaryRepository->getCommentaries(null, $current_page, $limit);
 

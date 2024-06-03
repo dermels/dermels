@@ -12,7 +12,6 @@ require_once '../src/router.php';
 // Initialiser PDO pour la base de données
 try {
     $db = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASSWORD);
-//    echo 'Connexion réussie' ;
 } catch (PDOException $e) {
     print 'error 500 : ' . $e->getMessage();
 }
