@@ -281,7 +281,7 @@ class Router
 
     private function handleAccessDenied(): string
     {
-        // affichez un message d'erreur adéquat ou redirigez l'utilisateur vers une autre page
+        // affichez un message d'erreur adéquat ou rediriger l'utilisateur vers une autre page
         return "Accès non autorisé.";
     }
 
