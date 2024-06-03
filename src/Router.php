@@ -52,7 +52,7 @@ class Router
 
         // Vérifiez si la route existe dans le tableau
         if (!array_key_exists($path, $this->routes)) {
-            echo $this->handleNotFound();
+            print $this->handleNotFound();
             return;
         }
 
@@ -62,7 +62,7 @@ class Router
 
         //verifies que la methode existe
         if (!method_exists($this, $methodName)) {
-            echo $this->handleNotFound();
+            print $this->handleNotFound();
             return;
         }
 
@@ -79,7 +79,7 @@ class Router
             if ($currentUserLevel < $requiredRoleLevel) {
                 if($currentUserLevel == 0)
                     redirect('/login');
-                echo $this->handleAccessDenied();
+                print $this->handleAccessDenied();
                 return;
             }
         }
@@ -87,7 +87,7 @@ class Router
 
 
         // sinon, appeler la méthode appropriée
-        echo $this->$methodName($_SERVER['REQUEST_METHOD'] ?? 'handleNotFound');
+        print $this->$methodName($_SERVER['REQUEST_METHOD'] ?? 'handleNotFound');
 
     }
 

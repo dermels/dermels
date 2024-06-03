@@ -14,7 +14,7 @@ try {
     $db = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASSWORD);
 //    echo 'Connexion réussie' ;
 } catch (PDOException $e) {
-    echo 'error 500 : ' . $e->getMessage();
+    print 'error 500 : ' . $e->getMessage();
 }
 // Démarrer la session
 session_start();
