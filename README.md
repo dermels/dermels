@@ -1,5 +1,7 @@
 # OpenClassroom
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c24a5c310a2c4dfeba9789e144333690)](https://app.codacy.com/gh/dermels/dermels?utm_source=github.com&utm_medium=referral&utm_content=dermels/dermels&utm_campaign=Badge_Grade)
+
 
 
 ## Getting started
